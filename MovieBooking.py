@@ -5,6 +5,7 @@
 # - Then apply the discounts.
 # - Make an equation for any situation at hand.
 
+#-------------------------------------------------------------------------------------------------------------#        
 import sys
 import random
 
@@ -18,12 +19,48 @@ memberDiscountPct = 0.15   # - memberDiscountPct
 salesTaxPct = 0.09 # - salesTaxPct
 
 movies = [f"{case1}", f"{case2}", f"{case3}", f"{case4}"]  # - ...
+choice = None
+#-------------------------------------------------------------------------------------------------------------#        
+
+def initiate():
+    global choice
+    choice = input("Please type your number from the option above: ").strip()
+    return (choice)
+
+def options():
+    print("Press #1 for the movies listed currently!")
+    print("Press #2 to add a movie!")
+    print("Press #3 to remove a movie!")
+    print("Press #4 to book a movie!")
+    print("Press #5 to exit!")
+    print("Press #6 to repeat the options")
+    initiate()
+
+def welcome():
+    print("Hello there! Welcome to Python Theaters Online!")
+
+def operator():
+    global choice
+    options()
+    if choice in ("#1", "1"):
+        print(movies)
+    elif choice in ("#2", "2"):
+        addMovie()
+    elif choice in ("#3", "3"):
+        removeMovie()
+    elif choice in ("#4", "4"):
+        movieBooking()
+    elif choice in ("#5", "5"):
+        toExit()
+    elif choice in ("#6", "6"):
+        options()
+
+#-------------------------------------------------------------------------------------------------------------#        
 
 def findMoviePriceByMovieName(movie):
-    if movie not in movies: # - ...
+    while movie not in movies: # - ...
         movie = str(input(f"Sorry, try again. Please let me know what movie you are watching? The options are {movies}: "))
-    elif movie in movies:
-        moviePrice = random.randint(10,20)  
+    moviePrice = random.randint(10,20)  
     return moviePrice
 
 def calculateInitialBill(moviePrice, numOfPeople):
@@ -39,7 +76,7 @@ def applyVolumeDiscount(bill, numberOfPeople):
 
 def applyMemberDiscount(bill, isAMember):
     # TODO: Can we avoid the extra variable appliedVolumeDiscount?
-    if isAMember == "Y" or "y" :
+    if isAMember.strip().lower() == "y" :
         bill = bill * (1 - memberDiscountPct)
     return bill
 
@@ -51,10 +88,10 @@ def applySalesTax(bill):
 #Adds a movie of the users choice.
 def addMovie():
     addedMovie = input("Would you like to add a movie? Y or N: ")
-    if addedMovie == "Y" or "y":
+    if addedMovie.strip().lower() == "y" :
         addedMovie = input("What is the name of your movie in mind? ")
         movies.append(addedMovie)
-    elif addedMovie == "N" or "n" :
+    elif addedMovie.strip().lower() == "n" :
         print("Ok")
     else:
         print("I will take that as a [NO].")
@@ -63,48 +100,39 @@ def addMovie():
 #Removes a movie of the users choice.
 def removeMovie():
     removedMovie = input("Would you like to remove a movie? Y or N: ")
-    if removedMovie == "Y" or "y":
+    if removedMovie.strip().lower() == "y":
         removedMovie = input("What is the name of your movie in mind? ")
-        if removedMovie not in movies:
+        while removedMovie not in movies:
             removedMovie = input("Sorry, that is not an option, please try again: ")
-            if removedMovie == None or [] or removedMovie not in movies:
-                sys.exit("No funny business in the theaters")
-            else:
-                print("I will take that as a [NO].")
-        elif removedMovie in movies:
-            movies.remove(removedMovie) #Review Check
-    elif removedMovie == "N" or "n":
+        movies.remove(removedMovie) #Review Check
+    elif removedMovie.strip().lower() == "n":
         print("Ok")
     else:
         print("I will take that as a [NO].")
     return movies
 
-def booking():
-    booking = input("Would you like to book a movie? Y or N: ")
-    if booking == "Y" or "y":
-        ...
-    else:
-        ...
-    #addMovie()
-    #removeMovie()
-
 def toExit():
     exiting = input("Would you like to leave the theater? Y or N: ")
-    if exiting == "Y" or "y":
-        sys.exit
+    if exiting.strip().lower() == "y":
+        sys.exit()
     print("Ok, lets continue.")
-#-------------------------------------------------------------------------------------------------------------#        
 
-def MovieReciept():
+def movieBooking():
 
     #Take necessary inputs
-    movie = str(input(f"Hello! Welcome back to Python Theaters! What is the movie you are watching today? The options are {movies}: "))  # - ...
-    numberOfPeople = int(input("And how many people are going to that movie? "))    # - ...
-    isMember = str(input("Is any one in your party a member of Python Theaters? Please say Y or N: "))   # - ...
+    movie = str(input(f"Welcome back to Python Theaters Online! What is the movie you are watching today? The options are {movies}: "))  # - ...
+    numberOfPeople = input("And how many people are going to that movie? ")    # - ...
+    while True:  # Validate Inputs & return if they are bad
+        try:
+            numberOfPeople = int(numberOfPeople)
+            if numberOfPeople > 0:
+                break
+            else:
+                numberOfPeople = input("Please try again, how many people are going to that movie? ")
+        except ValueError:
+            numberOfPeople = input("Please enter a valid number of people: ")
 
-    # Validate Inputs & return if they are bad
-    while numberOfPeople <= 0:
-        numberOfPeople = input("Please try again, how many people are going to that movie?")    
+    isMember = str(input("Is any one in your party a member of Python Theaters? Please say Y or N: "))   # - ...
 
     # Find Movie price by movie name
     # inputs: movie name
@@ -133,17 +161,15 @@ def MovieReciept():
     
     subtotal = round(float(subtotal), 2)
 
-    print(f"Here is your recipet: Your subtotal is ${subtotal}, by going to the {movie} movie, which is ${moviePrice} per person, by going with {numberOfPeople} people.")
+    print(f"Here is your receipt: Your subtotal is ${subtotal}, by going to the {movie} movie, which is ${moviePrice} per person, by going with {numberOfPeople} people.")
     print("We hope to see you come back soon")
 
 #-------------------------------------------------------------------------------------------------------------#
 
+welcome()
+
 while True:
-    MovieReciept()
-    #addMovie()
-    #removeMovie()
-    toExit()
-    booking()
+    operator()
 #-------------------------------------------------------------------------------------------------------------#
 
 # - Case #1: Number of People is less than 6.
@@ -177,15 +203,4 @@ while True:
 
 # - Case #5: other than in member input
 # - Input: NOO
-# - Ouput: "I will take that as a [NO].
-
-
-# TODO:
-# Less than 6, no member -- objective didn't reflect, but this was covered.
-# Greater than 6, no member -- Not covered </
-# Less than 6, member -- objective didn't reflect, but this was covered.
-# greater than 6, member -- objective didn't reflect, but this was covered.
-# Error cases:
-# less thna 0 as people input -- Not covered
-# Y/N - other than in member input -- Not covered
-# 
+# - Ouput: "I will take that as a [NO]. 
